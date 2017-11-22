@@ -1,5 +1,7 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using SmtpServer;
 using SmtpServer.Authentication;
 
 namespace NLog.MailKit.Tests
@@ -17,10 +19,11 @@ namespace NLog.MailKit.Tests
         }
 
 
-        public Task<bool> AuthenticateAsync(string user, string password)
-        {
 
+        public Task<bool> AuthenticateAsync(ISessionContext context, string user, string password, CancellationToken cancellationToken)
+        {
             return Task.FromResult(_username == user && _pasword == password);
         }
     }
 }
+
