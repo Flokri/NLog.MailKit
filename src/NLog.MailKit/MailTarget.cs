@@ -32,10 +32,6 @@
 // 
 
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
@@ -45,6 +41,10 @@ using NLog.Config;
 using NLog.Internal;
 using NLog.Layouts;
 using NLog.Targets;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text;
 
 namespace NLog.MailKit
 {
@@ -172,6 +172,7 @@ namespace NLog.MailKit
         /// </summary>
         /// <docgen category='Layout Options' order='20' />
         [DefaultValue("UTF8")]
+        [NotPersistable]
         public Encoding Encoding { get; set; }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace NLog.MailKit
         /// <docgen category='SMTP Options' order='16' />.
         [DefaultValue(false)]
         public bool SkipCertificateValidation { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the priority used for sending mails.
         /// </summary>
@@ -305,7 +306,7 @@ namespace NLog.MailKit
             InternalLogger.Debug("Init mailtarget with mailkit");
             CheckRequiredParameters();
 
-            if (this.SmtpAuthentication == SmtpAuthenticationMode.Ntlm)
+            if (SmtpAuthentication == SmtpAuthenticationMode.Ntlm)
             {
                 throw new NLogConfigurationException("Ntlm not yet supported");
             }
@@ -351,11 +352,12 @@ namespace NLog.MailKit
                     InternalLogger.Debug("Sending mail to {0} using {1}:{2} (socket option={3})", message.To, renderedHost, SmtpPort, secureSocketOptions);
                     InternalLogger.Trace("  Subject: '{0}'", message.Subject);
                     InternalLogger.Trace("  From: '{0}'", message.From.ToString());
-                    
-                    if(SkipCertificateValidation)
-                        client.ServerCertificateValidationCallback += (s, cert, chain, sslPolicyErrors) => true;
 
-                   
+                    if (SkipCertificateValidation)
+                    {
+                        client.ServerCertificateValidationCallback += (s, cert, chain, sslPolicyErrors) => true;
+                    }
+
                     client.Connect(renderedHost, SmtpPort, secureSocketOptions);
                     InternalLogger.Trace("  Connecting succesfull");
 
@@ -365,7 +367,7 @@ namespace NLog.MailKit
 
                     // Note: only needed if the SMTP server requires authentication
 
-                    if (this.SmtpAuthentication == SmtpAuthenticationMode.Basic)
+                    if (SmtpAuthentication == SmtpAuthenticationMode.Basic)
                     {
                         var userName = SmtpUserName?.Render(lastEvent);
                         var password = SmtpPassword?.Render(lastEvent);
@@ -486,7 +488,9 @@ namespace NLog.MailKit
         {
             sb.Append("|");
             if (layout != null)
+            {
                 sb.Append(layout.Render(logEvent));
+            }
         }
 
 
@@ -538,7 +542,10 @@ namespace NLog.MailKit
             {
                 var newBody = body;
                 if (Html && ReplaceNewlineWithBrTagInHtml)
+                {
                     newBody = newBody?.Replace(Environment.NewLine, "<br/>");
+                }
+
                 return new TextPart(Html ? TextFormat.Html : TextFormat.Plain)
                 {
                     Text = newBody,

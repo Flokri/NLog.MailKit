@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;netstandard1.5;net45;netstandard2.0</TargetFrameworks>
-    <Version>3.0</Version>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <Version>3.0.1</Version>
     <Authors>Julian Verdurmen</Authors>
     <Company>NLog</Company>
     <Description>NLog Mail Target for .NET Core &amp; .NET Standard, and .NET 4.5+ using MailKit.
@@ -50,9 +50,11 @@ Small breaking change, SmtpAuthenticationMode has been moved to this dll.
     <DefineConstants>RELEASE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="2.0.6" />
+    <PackageReference Include="MailKit" Version="2.1.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.5.9" />
+    <Reference Include="NLog">
+      <HintPath>..\..\..\NLog\src\NLog\bin\Debug\net45\NLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
